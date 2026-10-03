@@ -51,11 +51,12 @@
       pdfs.forEach(pdf => {
         const li = document.createElement("li");
         const a = document.createElement("a");
-        a.href = pdf.download_url;
+        a.href = `${window.location.origin}/pacs.health/docs/dicom/${vendorName}/${pdf.name}`;
         a.textContent = pdf.name.replace(".pdf", "");
         li.appendChild(a);
         list.appendChild(li);
       });
+
 
       section.appendChild(list);
       container.appendChild(section);
