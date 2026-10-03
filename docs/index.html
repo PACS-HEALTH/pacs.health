@@ -40,7 +40,7 @@
 
         // Build dynamic GitHub Pages URL
         const pagesPath = path.replace("docs/", "");
-        a.href = `${window.location.origin}/pacs.health/${pagesPath}/${item.name}`;
+        a.href = `${window.location.origin}/${pagesPath}/${item.name}`;
         a.textContent = item.name.replace(".pdf", "");
 
         li.appendChild(a);
