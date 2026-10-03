@@ -7,13 +7,14 @@
     body { font-family: Arial, sans-serif; margin: 40px; }
     h1 { margin-bottom: 20px; }
     h2 { margin-top: 30px; }
+    h3 { margin-top: 15px; }
     ul { line-height: 1.8; }
   </style>
 </head>
 <body>
 
 <h1>DICOM Conformance Statements</h1>
-<p>Automatically indexed vendor directories and PDF files:</p>
+<p>Automatically indexed vendors, modalities, and PDF files:</p>
 
 <div id="vendors"></div>
 
@@ -26,39 +27,60 @@
     return await response.json();
   }
 
+  // Recursively list PDFs and subfolders
+  async function listPdfsRecursively(path, container) {
+    const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
+    const items = await fetchJSON(apiUrl);
+
+    for (const item of items) {
+      // PDF file
+      if (item.type === "file" && item.name.endsWith(".pdf")) {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+
+        // Build dynamic GitHub Pages URL
+        const pagesPath = path.replace("docs/", "");
+        a.href = `${window.location.origin}/pacs.health/${pagesPath}/${item.name}`;
+        a.textContent = item.name.replace(".pdf", "");
+
+        li.appendChild(a);
+        container.appendChild(li);
+      }
+
+      // Subfolder (modality or deeper)
+      if (item.type === "dir") {
+        const subHeader = document.createElement("h3");
+        subHeader.textContent = item.name;
+        container.appendChild(subHeader);
+
+        const subList = document.createElement("ul");
+        container.appendChild(subList);
+
+        await listPdfsRecursively(`${path}/${item.name}`, subList);
+      }
+    }
+  }
+
+  // Load vendors and recurse into each
   async function loadVendors() {
     const apiUrl = `https://api.github.com/repos/${repo}/contents/${basePath}`;
     const items = await fetchJSON(apiUrl);
 
     const vendorFolders = items.filter(item => item.type === "dir");
-
     const container = document.getElementById("vendors");
 
     for (const vendor of vendorFolders) {
-      const vendorName = vendor.name;
-      const vendorUrl = `https://api.github.com/repos/${repo}/contents/${basePath}/${vendorName}`;
-
-      const vendorFiles = await fetchJSON(vendorUrl);
-      const pdfs = vendorFiles.filter(file => file.name.endsWith(".pdf"));
-
       const section = document.createElement("div");
+
       const title = document.createElement("h2");
-      title.textContent = vendorName;
+      title.textContent = vendor.name;
       section.appendChild(title);
 
       const list = document.createElement("ul");
-
-      pdfs.forEach(pdf => {
-        const li = document.createElement("li");
-        const a = document.createElement("a");
-        a.href = `${window.location.origin}/pacs.health/dicom/${vendorName}/${pdf.name}`;
-        a.textContent = pdf.name.replace(".pdf", "");
-        li.appendChild(a);
-        list.appendChild(li);
-      });
-
-
       section.appendChild(list);
+
+      await listPdfsRecursively(`${basePath}/${vendor.name}`, list);
+
       container.appendChild(section);
     }
   }
