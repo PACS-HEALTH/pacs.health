@@ -51,7 +51,7 @@
       pdfs.forEach(pdf => {
         const li = document.createElement("li");
         const a = document.createElement("a");
-        a.href = `${window.location.origin}/pacs.health/docs/dicom/${vendorName}/${pdf.name}`;
+        a.href = `${window.location.origin}/pacs.health/dicom/${vendorName}/${pdf.name}`;
         a.textContent = pdf.name.replace(".pdf", "");
         li.appendChild(a);
         list.appendChild(li);
