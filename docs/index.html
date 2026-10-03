@@ -2,25 +2,24 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>DICOM Conformance Statements</title>
+  <title>DICOM & HL7 Conformance Statements</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; }
     h1 { margin-bottom: 20px; }
-    h2 { margin-top: 30px; }
+    h2 { margin-top: 40px; }
     h3 { margin-top: 15px; }
     ul { line-height: 1.8; }
   </style>
 </head>
 <body>
 
-<h1>DICOM Conformance Statements</h1>
-<p>Automatically indexed vendors, modalities, and PDF files:</p>
+<h1>DICOM & HL7 Conformance Statements</h1>
+<p>Automatically indexed vendors, modalities, message types, and PDF files:</p>
 
-<div id="vendors"></div>
+<div id="content"></div>
 
 <script>
   const repo = "PACS-HEALTH/pacs.health";
-  const basePath = "docs/dicom";
 
   async function fetchJSON(url) {
     const response = await fetch(url);
@@ -33,6 +32,7 @@
     const items = await fetchJSON(apiUrl);
 
     for (const item of items) {
+
       // PDF file
       if (item.type === "file" && item.name.endsWith(".pdf")) {
         const li = document.createElement("li");
@@ -47,7 +47,7 @@
         container.appendChild(li);
       }
 
-      // Subfolder (modality or deeper)
+      // Subfolder (modality, message type, deeper levels)
       if (item.type === "dir") {
         const subHeader = document.createElement("h3");
         subHeader.textContent = item.name;
@@ -61,31 +61,63 @@
     }
   }
 
-  // Load vendors and recurse into each
-  async function loadVendors() {
-    const apiUrl = `https://api.github.com/repos/${repo}/contents/${basePath}`;
+  // Load DICOM vendors
+  async function loadDicom() {
+    const apiUrl = `https://api.github.com/repos/${repo}/contents/docs/dicom`;
     const items = await fetchJSON(apiUrl);
 
     const vendorFolders = items.filter(item => item.type === "dir");
-    const container = document.getElementById("vendors");
+    const container = document.getElementById("content");
+
+    const section = document.createElement("div");
+    const title = document.createElement("h2");
+    title.textContent = "DICOM";
+    section.appendChild(title);
 
     for (const vendor of vendorFolders) {
-      const section = document.createElement("div");
-
-      const title = document.createElement("h2");
-      title.textContent = vendor.name;
-      section.appendChild(title);
+      const vendorHeader = document.createElement("h3");
+      vendorHeader.textContent = vendor.name;
+      section.appendChild(vendorHeader);
 
       const list = document.createElement("ul");
       section.appendChild(list);
 
-      await listPdfsRecursively(`${basePath}/${vendor.name}`, list);
-
-      container.appendChild(section);
+      await listPdfsRecursively(`docs/dicom/${vendor.name}`, list);
     }
+
+    container.appendChild(section);
   }
 
-  loadVendors();
+  // Load HL7 folders
+  async function loadHl7() {
+    const apiUrl = `https://api.github.com/repos/${repo}/contents/docs/hl7`;
+    const items = await fetchJSON(apiUrl);
+
+    const hl7Folders = items.filter(item => item.type === "dir");
+    const container = document.getElementById("content");
+
+    const section = document.createElement("div");
+    const title = document.createElement("h2");
+    title.textContent = "HL7";
+    section.appendChild(title);
+
+    for (const folder of hl7Folders) {
+      const folderHeader = document.createElement("h3");
+      folderHeader.textContent = folder.name;
+      section.appendChild(folderHeader);
+
+      const list = document.createElement("ul");
+      section.appendChild(list);
+
+      await listPdfsRecursively(`docs/hl7/${folder.name}`, list);
+    }
+
+    container.appendChild(section);
+  }
+
+  // Load both standards
+  loadDicom();
+  loadHl7();
 </script>
 
 </body>
