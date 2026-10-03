@@ -38,7 +38,7 @@
         const li = document.createElement("li");
         const a = document.createElement("a");
 
-        // Build dynamic GitHub Pages URL
+        // Build dynamic GitHub Pages URL (correct for pacs.health domain)
         const pagesPath = path.replace("docs/", "");
         a.href = `${window.location.origin}/pacs.health/${pagesPath}/${item.name}`;
         a.textContent = item.name.replace(".pdf", "");
