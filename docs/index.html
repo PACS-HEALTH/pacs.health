@@ -1,11 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DICOM Conformance Statements</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    h1 { margin-bottom: 20px; }
+    h2 { margin-top: 30px; }
+    ul { line-height: 1.8; }
+  </style>
+</head>
+<body>
+
 <h1>DICOM Conformance Statements</h1>
+<p>Automatically indexed vendor directories and PDF files:</p>
 
-<p>Select a vendor below:</p>
+<div id="vendors"></div>
 
-<ul>
-  <li><a href="dicom/Agfa/">Agfa</a></li>
-  <li><a href="dicom/GE/">GE Healthcare</a></li>
-  <li><a href="dicom/Siemens/">Siemens</a></li>
-  <li><a href="dicom/Visage/">Visage</a></li>
-  <li><a href="dicom/Zeizz/">Zeizz</a></li>
-</ul>
+<script>
+  const repo = "PACS-HEALTH/pacs.health";
+  const basePath = "docs/dicom";
+
+  async function fetchJSON(url) {
+    const response = await fetch(url);
+    return await response.json();
+  }
+
+  async function loadVendors() {
+    const apiUrl = `https://api.github.com/repos/${repo}/contents/${basePath}`;
+    const items = await fetchJSON(apiUrl);
+
+    const vendorFolders = items.filter(item => item.type === "dir");
+
+    const container = document.getElementById("vendors");
+
+    for (const vendor of vendorFolders) {
+      const vendorName = vendor.name;
+      const vendorUrl = `https://api.github.com/repos/${repo}/contents/${basePath}/${vendorName}`;
+
+      const vendorFiles = await fetchJSON(vendorUrl);
+      const pdfs = vendorFiles.filter(file => file.name.endsWith(".pdf"));
+
+      const section = document.createElement("div");
+      const title = document.createElement("h2");
+      title.textContent = vendorName;
+      section.appendChild(title);
+
+      const list = document.createElement("ul");
+
+      pdfs.forEach(pdf => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = pdf.download_url;
+        a.textContent = pdf.name.replace(".pdf", "");
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+
+      section.appendChild(list);
+      container.appendChild(section);
+    }
+  }
+
+  loadVendors();
+</script>
+
+</body>
+</html>
