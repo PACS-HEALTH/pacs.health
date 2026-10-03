@@ -11,36 +11,31 @@
 </head>
 <body>
 
-<h1>DICOM Conformance Statements</h1>
+<h1>Agfa DICOM Conformance Statements</h1>
 <p>Files in this directory:</p>
 
 <ul id="file-list"></ul>
 
 <script>
   async function loadFiles() {
-    const response = await fetch(window.location.href);
-    const text = await response.text();
+    // GitHub API URL for this folder
+    const apiUrl = "https://api.github.com/repos/PACS-HEALTH/pacs.health/contents/docs/dicom/Agfa";
 
-    // Parse directory listing (GitHub Pages auto-generated HTML)
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, "text/html");
-
-    const links = [...doc.querySelectorAll("a")];
-
-    const pdfs = links
-      .map(a => a.getAttribute("href"))
-      .filter(href => href && href.endsWith(".pdf"));
+    const response = await fetch(apiUrl);
+    const files = await response.json();
 
     const list = document.getElementById("file-list");
 
-    pdfs.forEach(pdf => {
-      const li = document.createElement("li");
-      const a = document.createElement("a");
-      a.href = pdf;
-      a.textContent = pdf.replace(/\.pdf$/, "");
-      li.appendChild(a);
-      list.appendChild(li);
-    });
+    files
+      .filter(file => file.name.endsWith(".pdf"))
+      .forEach(file => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = file.download_url;
+        a.textContent = file.name.replace(".pdf", "");
+        li.appendChild(a);
+        list.appendChild(li);
+      });
   }
 
   loadFiles();
