@@ -1,1 +1,0 @@
-Siemens Conformance Statements
