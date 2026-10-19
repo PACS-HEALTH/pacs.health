@@ -77,8 +77,12 @@ function createLink(path, filename) {
   const encodedPath = path.split('/').map(seg => encodeURIComponent(seg)).join('/');
   a.href = encodedPath + "/" + encodeURIComponent(filename);
 
-  // remove only a trailing .pdf (case-insensitive) for display, leave the href untouched
-  a.textContent = filename.replace(/\.pdf$/i, "");
+  // remove only the final ".pdf" (case-insensitive) for display, leave the href untouched
+  if (filename.toLowerCase().endsWith('.pdf')) {
+    a.textContent = filename.slice(0, -4);
+  } else {
+    a.textContent = filename;
+  }
 
   li.appendChild(a);
 
