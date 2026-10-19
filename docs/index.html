@@ -1,245 +1,72 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>DICOM & HL7 Conformance Statements</title>
+{
+  "Agfa": {
+    "Enterprise Imaging": [
+      "001498_Enterprise_Imaging_VNA_8.0.0_DICOM_Conformance_Statement.pdf",
+      "001512_Enterprise_Imaging_8.0.x_DICOM_Conformance_Statement.pdf",
+      "001522_Enterprise_Imaging_TRANSPORT_Web_1.0_DICOM_Conformance_Statement.pdf",
+      "001531_Enterprise_Imaging_8.1.x_DICOM_Conformance_Statement.pdf",
+      "001647_Enterprise_Imaging_8.2.x_DICOM_Conformance_Statement.pdf",
+      "001667_Enterprise_Imaging_8.3.x_DICOM_Conformance_Statement.pdf"
+    ],
+    "Portal": [
+      "001527_Agfa_HealthCare_Engage_Suite_DICOM_Conformance_Statement.pdf"
+    ]
+  },
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      max-width: 1400px;
+  "GE": {
+    "ABUS": [
+      "dicom-Conform-Statement-Invenia-ABUSSS2020-DOC2125962-rev01-ds-en.pdf",
+      "dicom-Conform-Statement-Invenia-abus-Viewer25-DOC2125966-ds-en.pdf",
+      "gehc-dicom-conformance-abus-rs-DOC1806201-rev1-ds-en.pdf",
+      "gehc-dicom-conformance-abus-ss-DOC1806913-rev1-ds-en.pdf"
+    ],
+
+    "LOGIC 7": [
+      "ts-interoperability-dicom-ultrasound-gehc-dicom-conformance-logiq7-2316173-100-rev7-03-ds-en.pdf",
+      "ts-interoperability-dicom-ultrasound-gehc-dicom-conformance-logiq7-2316173-100-rev8-00-ds-en.pdf"
+    ],
+
+    "LOGIC 9": [
+      "s-interoperability-dicom-ultrasound-gehc-dicom-conformance-logiqe9-2325843-100-rev9-02-ds-en.pdf"
+    ],
+
+    "LOGIQ 9": [
+      "s-interoperability-dicom-ultrasound-gehc-dicom-conformance-logiqe9-2325843-100-rev7-02-ds-en.pdf"
+    ]
+  },
+
+  "Siemens": {
+    "Mammography": {
+      "B.brilliant": [
+        "MAMMOMAT_B.brilliant_VA10_DICOM_Conformance_Statement.pdf",
+        "MAMMOMAT_B.brilliant_VA11_DICOM_Conformance_Statement.pdf"
+      ],
+
+      "Fusion": [
+        "MAMMOMAT_Inspiration_Fusion_VB61_DICOM_Conformance_Statement.pdf"
+      ],
+
+      "Inspiration": [
+        "MAMMOMAT_Inspiration_Fusion_VB61_DICOM_Conformance_Statement.pdf"
+      ],
+
+      "Revelation": [
+        "MAMMOMAT_Revelation_VC20G_DICOM_Conformance_Statement.pdf",
+        "MAMMOMAT_Revelation_VC20H_DICOM_Conformance_Statement.pdf"
+      ]
     }
+  },
 
-    h1 {
-      margin-bottom: 20px;
-    }
+  "Visage": {
+    "DICOM": [
+      "Visage7_DICOMConformanceStatement.pdf"
+    ]
+  },
 
-    h2 {
-      margin-top: 40px;
-      border-bottom: 2px solid #ddd;
-      padding-bottom: 5px;
-    }
-
-    h3 {
-      margin-top: 25px;
-      color: #005a9c;
-    }
-
-    h4 {
-      margin-top: 15px;
-      color: #666;
-    }
-
-    ul {
-      line-height: 1.8;
-    }
-
-    a {
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
-</head>
-
-<body>
-
-<h1>DICOM & HL7 Conformance Statements</h1>
-
-<p>
-Public repository of DICOM and HL7 conformance statements.
-</p>
-
-<div id="content"></div>
-
-<script>
-
-async function fetchJSON(path) {
-  const response = await fetch(path);
-
-  if (!response.ok) {
-    throw new Error(`Failed to load ${path}`);
+  "Zeizz": {
+    "DICOM": [
+      "dicom_conformance_statement_dicom-forwarder_v.1.5.pdf",
+      "dicom_conformance_statement_visupac_4.5.2_and_above.pdf"
+    ]
   }
-
-  return await response.json();
 }
-
-function createLink(path, filename) {
-
-  const li = document.createElement("li");
-
-  const a = document.createElement("a");
-
-  a.href = path + "/" + filename;
-
-  a.textContent = filename.replace(".pdf", "");
-
-  li.appendChild(a);
-
-  return li;
-}
-
-async function loadDicom() {
-
-  const dicom = await fetchJSON("data/dicom.json");
-
-  const container =
-      document.getElementById("content");
-
-  const section =
-      document.createElement("div");
-
-  const title =
-      document.createElement("h2");
-
-  title.textContent = "DICOM";
-
-  section.appendChild(title);
-
-  for (const vendor in dicom) {
-
-    const vendorHeader =
-      document.createElement("h3");
-
-    vendorHeader.textContent = vendor;
-
-    section.appendChild(vendorHeader);
-
-    const vendorData = dicom[vendor];
-
-    for (const category in vendorData) {
-
-      const categoryHeader =
-          document.createElement("h4");
-
-      categoryHeader.textContent = category;
-
-      section.appendChild(categoryHeader);
-
-      const list =
-          document.createElement("ul");
-
-      const content = vendorData[category];
-
-      if (Array.isArray(content)) {
-
-        content.forEach(pdf => {
-
-          list.appendChild(
-            createLink(
-              `dicom/${vendor}/${category}`,
-              pdf
-            )
-          );
-
-        });
-
-        section.appendChild(list);
-      }
-
-      else {
-
-        for (const subCategory in content) {
-
-          const subHeader =
-              document.createElement("h4");
-
-          subHeader.textContent =
-              category + " / " + subCategory;
-
-          section.appendChild(subHeader);
-
-          const subList =
-              document.createElement("ul");
-
-          content[subCategory].forEach(pdf => {
-
-            subList.appendChild(
-              createLink(
-                `dicom/${vendor}/${category}/${subCategory}`,
-                pdf
-              )
-            );
-
-          });
-
-          section.appendChild(subList);
-        }
-
-      }
-
-    }
-
-  }
-
-  container.appendChild(section);
-
-}
-
-async function loadHl7() {
-
-  const hl7 =
-      await fetchJSON("data/hl7.json");
-
-  const container =
-      document.getElementById("content");
-
-  const section =
-      document.createElement("div");
-
-  const title =
-      document.createElement("h2");
-
-  title.textContent = "HL7";
-
-  section.appendChild(title);
-
-  for (const vendor in hl7) {
-
-    const vendorHeader =
-        document.createElement("h3");
-
-    vendorHeader.textContent =
-        vendor;
-
-    section.appendChild(vendorHeader);
-
-    const list =
-        document.createElement("ul");
-
-    hl7[vendor].forEach(pdf => {
-
-      list.appendChild(
-        createLink(
-          `hl7/${vendor}`,
-          pdf
-        )
-      );
-
-    });
-
-    section.appendChild(list);
-  }
-
-  container.appendChild(section);
-}
-
-Promise.all([
-  loadDicom(),
-  loadHl7()
-]).catch(error => {
-
-  console.error(error);
-
-  document.getElementById("content").innerHTML =
-      "<p><strong>Error loading repository data.</strong></p>";
-
-});
-
-</script>
-
-</body>
-</html>
