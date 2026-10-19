@@ -1,48 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>DICOM & HL7 Conformance Statements</title>
+  <meta charset="UTF-8">
+  <title>DICOM & HL7 Conformance Statements</title>
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 40px;
-  max-width: 1400px;
-}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      max-width: 1400px;
+    }
 
-h1 {
-  margin-bottom: 20px;
-}
+    h1 {
+      margin-bottom: 20px;
+    }
 
-h2 {
-  margin-top: 40px;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 5px;
-}
+    h2 {
+      margin-top: 40px;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 5px;
+    }
 
-h3 {
-  margin-top: 25px;
-  color: #005a9c;
-}
+    h3 {
+      margin-top: 25px;
+      color: #005a9c;
+    }
 
-h4 {
-  margin-top: 15px;
-  color: #666;
-}
+    h4 {
+      margin-top: 15px;
+      color: #666;
+    }
 
-ul {
-  line-height: 1.8;
-}
+    ul {
+      line-height: 1.8;
+    }
 
-a {
-  text-decoration: none;
-}
+    a {
+      text-decoration: none;
+    }
 
-a:hover {
-  text-decoration: underline;
-}
-</style>
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 
 <body>
@@ -80,18 +80,20 @@ function createLink(path, filename) {
   li.appendChild(a);
 
   return li;
-
 }
 
 async function loadDicom() {
 
   const dicom = await fetchJSON("data/dicom.json");
 
-  const container = document.getElementById("content");
+  const container =
+      document.getElementById("content");
 
-  const section = document.createElement("div");
+  const section =
+      document.createElement("div");
 
-  const title = document.createElement("h2");
+  const title =
+      document.createElement("h2");
 
   title.textContent = "DICOM";
 
@@ -99,7 +101,8 @@ async function loadDicom() {
 
   for (const vendor in dicom) {
 
-    const vendorHeader = document.createElement("h3");
+    const vendorHeader =
+      document.createElement("h3");
 
     vendorHeader.textContent = vendor;
 
@@ -109,14 +112,134 @@ async function loadDicom() {
 
     for (const category in vendorData) {
 
-      const categoryHeader = document.createElement("h4");
+      const categoryHeader =
+          document.createElement("h4");
 
       categoryHeader.textContent = category;
 
       section.appendChild(categoryHeader);
 
+      const list =
+          document.createElement("ul");
+
       const content = vendorData[category];
 
       if (Array.isArray(content)) {
 
-        const list = 
+        content.forEach(pdf => {
+
+          list.appendChild(
+            createLink(
+              `dicom/${vendor}/${category}`,
+              pdf
+            )
+          );
+
+        });
+
+        section.appendChild(list);
+      }
+
+      else {
+
+        for (const subCategory in content) {
+
+          const subHeader =
+              document.createElement("h4");
+
+          subHeader.textContent =
+              category + " / " + subCategory;
+
+          section.appendChild(subHeader);
+
+          const subList =
+              document.createElement("ul");
+
+          content[subCategory].forEach(pdf => {
+
+            subList.appendChild(
+              createLink(
+                `dicom/${vendor}/${category}/${subCategory}`,
+                pdf
+              )
+            );
+
+          });
+
+          section.appendChild(subList);
+        }
+
+      }
+
+    }
+
+  }
+
+  container.appendChild(section);
+
+}
+
+async function loadHl7() {
+
+  const hl7 =
+      await fetchJSON("data/hl7.json");
+
+  const container =
+      document.getElementById("content");
+
+  const section =
+      document.createElement("div");
+
+  const title =
+      document.createElement("h2");
+
+  title.textContent = "HL7";
+
+  section.appendChild(title);
+
+  for (const vendor in hl7) {
+
+    const vendorHeader =
+        document.createElement("h3");
+
+    vendorHeader.textContent =
+        vendor;
+
+    section.appendChild(vendorHeader);
+
+    const list =
+        document.createElement("ul");
+
+    hl7[vendor].forEach(pdf => {
+
+      list.appendChild(
+        createLink(
+          `hl7/${vendor}`,
+          pdf
+        )
+      );
+
+    });
+
+    section.appendChild(list);
+  }
+
+  container.appendChild(section);
+}
+
+Promise.all([
+  loadDicom(),
+  loadHl7()
+]).catch(error => {
+
+  console.error(error);
+
+  document.getElementById("content").innerHTML =
+      "<p><strong>Error loading repository data.</strong></p>";
+
+});
+
+</script>
+
+</body>
+</html>
