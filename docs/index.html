@@ -73,9 +73,12 @@ function createLink(path, filename) {
 
   const a = document.createElement("a");
 
-  a.href = path + "/" + filename;
+  // encode each path segment and the filename so the href matches the exact file name/casing
+  const encodedPath = path.split('/').map(seg => encodeURIComponent(seg)).join('/');
+  a.href = encodedPath + "/" + encodeURIComponent(filename);
 
-  a.textContent = filename.replace(".pdf", "");
+  // remove only a trailing .pdf (case-insensitive) for display, leave the href untouched
+  a.textContent = filename.replace(/\.pdf$/i, "");
 
   li.appendChild(a);
 
